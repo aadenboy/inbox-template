@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>send me stuff</title>
+    <link rel="stylesheet" href="./style.css" />
+    <script src="https://unpkg.com/zlibjs@0.3.1/bin/zlib.min.js"></script>
+  </head>
+  <body>
+    <h1>woah! an inbox! wowzers!</h1>
+    <p>built in a cave with a box of scraps because google forms works well enough</p>
+    <form id="form" method="POST">
+      <label>IDENTIFY YOURSELF: <input id="identity" type="text" name="identify yourself" placeholder="or be anonymous...!" /></label>
+      <textarea id="message" name="message" placeholder="whatever you want to say" /></textarea>
+      <input type="text" name="canvas" style="display: none;" />
+      <div id="canvas-area">
+        <div class="canvas-buttons">
+          <label>brush size <input type="range" id="brush-size" min="1" max="50" value="10" /></label>
+          <label>color <input type="color" id="color" value="#000000" /></label>
+          <button id="clear">clear</button>
+          <button disabled="true" id="undo" aria-label="undo">&larr;</button>
+          <button disabled="true" id="redo" aria-label="redo">&rarr;</button>
+        </div>
+        <canvas id="canvas" width="250" height="200">
+          sorry! your browser doesn't support the canvas tag! no images for you!
+        </canvas>
+        <div class="canvas-buttons">
+          <span id="size"></span>
+          <button id="save">save png</button>
+          <button id="export">export raw</button>
+          <button id="import">import raw</button>
+        </div>
+      </div>
+      <button disabled="true" type="submit" id="submit">submit</button>
+    </form>
+    <script src="./script.js"></script>
+    <noscript>
+      <p>hey please <a href="https://www.enable-javascript.com/">enable javascript</a> to use this, thanks</p>
+    </noscript>
+    <p><a href="https://forms.gle/1kmLBT37wwEnwGsN9">want to fill the form directly?</a></p>
+    <p>you can also shoot me a tumblr ask or send me an email at aadenboy@email.com</p>
+  </body>
+</html>
