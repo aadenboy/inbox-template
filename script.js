@@ -103,7 +103,7 @@ function importCanvas(base64) {
     let len = 0
     for (let j=0; j < lensize; j++) {
       len <<= 8;
-      len ||= bytes[i]; i++;
+      len |= bytes[i]; i++;
     }
     const stroke = {
       color: "#" + r.toString(16).padStart(2, "0") + g.toString(16).padStart(2, "0") + b.toString(16).padStart(2, "0"),
