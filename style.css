@@ -1,7 +1,7 @@
 html, body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 16px;
-  background: url("/commonbg.png");
+  background: url("./bg.png");
   background-size: contain;
   display: flex;
   justify-content: center;
@@ -99,4 +99,5 @@ a {
   background: #fff;
   width: 250px;
   height: 200px;
+  touch-action: none;
 }
