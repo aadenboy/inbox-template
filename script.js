@@ -103,7 +103,7 @@ function importCanvas(base64) {
     let len = 0
     for (let j=0; j < lensize; j++) {
       len <<= 8;
-      len |= bytes[i]; i++;
+      len ||= bytes[i]; i++;
     }
     const stroke = {
       color: "#" + r.toString(16).padStart(2, "0") + g.toString(16).padStart(2, "0") + b.toString(16).padStart(2, "0"),
@@ -180,25 +180,28 @@ function DouglasPeucker(points) {
 }
 
 let snapshot;
-canvas.addEventListener("mousedown", (e) => {
-  isDrawing = true;
-  strokes.push({
-    color: color.value,
-    size: brushSize.value,
-    points: [[e.offsetX, e.offsetY]]
+const device = window.navigator.userAgent.match(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i) ? "touch" : "mouse";
+
+if (device == "mouse") {
+  canvas.addEventListener("mousedown", (e) => {
+    isDrawing = true;
+    strokes.push({
+      color: color.value,
+      size: brushSize.value,
+      points: [[e.offsetX, e.offsetY]]
+    });
+    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
   });
-  snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
-});
-canvas.addEventListener("mousemove", (e) => {
-  if (!isDrawing) return;
-  strokes[strokes.length - 1].points.push([e.offsetX, e.offsetY]);
-  const stroke = strokes[strokes.length - 1];
-  const preview = DouglasPeucker(stroke.points);
-  ctx.putImageData(snapshot, 0, 0);
-  drawStroke(stroke, preview);
-});
-canvas.addEventListener("mouseup", () => {
-  if (isDrawing) {
+  canvas.addEventListener("mousemove", (e) => {
+    if (!isDrawing) return;
+    strokes[strokes.length - 1].points.push([e.offsetX, e.offsetY]);
+    const stroke = strokes[strokes.length - 1];
+    const preview = DouglasPeucker(stroke.points);
+    ctx.putImageData(snapshot, 0, 0);
+    drawStroke(stroke, preview);
+  });
+  canvas.addEventListener("mouseup", () => {
+    if (!isDrawing) return;
     isDrawing = false;
     const stroke = strokes[strokes.length - 1];
     stroke.points = DouglasPeucker(stroke.points);
@@ -209,8 +212,44 @@ canvas.addEventListener("mouseup", () => {
     redo.disabled = true;
     submit.disabled = false;
     recalcSize();
-  }
-});
+  });
+} else {
+  canvas.addEventListener("touchstart", (e) => {
+    isDrawing = true;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+    strokes.push({
+      color: color.value,
+      size: brushSize.value,
+      points: [[x, y]]
+    });
+    snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  });
+  canvas.addEventListener("touchmove", (e) => {
+    if (!isDrawing) return;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.touches[0].clientX - rect.left;
+    const y = e.touches[0].clientY - rect.top;
+    strokes[strokes.length - 1].points.push([x, y]);
+    const stroke = strokes[strokes.length - 1];
+    const preview = DouglasPeucker(stroke.points);
+    ctx.putImageData(snapshot, 0, 0);
+    drawStroke(stroke, preview);
+  });
+  canvas.addEventListener("touchend", () => {
+    if (!isDrawing) return;
+    isDrawing = false;
+    const stroke = strokes[strokes.length - 1];
+    stroke.points = DouglasPeucker(stroke.points);
+    ctx.putImageData(snapshot, 0, 0);
+    drawStroke(stroke);
+    undoStack = [];
+    undo.disabled = false;
+    redo.disabled = true;
+    submit.disabled = false;
+  });
+}
 undo.addEventListener("click", () => {
   undoStack.push(strokes.pop());
   redo.disabled = false;
