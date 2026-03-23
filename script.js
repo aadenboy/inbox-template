@@ -103,7 +103,7 @@ function importCanvas(base64) {
     let len = 0
     for (let j=0; j < lensize; j++) {
       len <<= 8;
-      len ||= bytes[i]; i++;
+      len |= bytes[i]; i++;
     }
     const stroke = {
       color: "#" + r.toString(16).padStart(2, "0") + g.toString(16).padStart(2, "0") + b.toString(16).padStart(2, "0"),
@@ -123,6 +123,12 @@ function importCanvas(base64) {
 
 const size = document.getElementById("size")
 function recalcSize() {
+  for (let stroke of strokes) {
+    for (let i=0; i<stroke.points.length; i++) {
+      stroke.points[i][0] = Math.min(Math.max(stroke.points[i][0], 0), 255);
+      stroke.points[i][1] = Math.min(Math.max(stroke.points[i][1], 0), 255);
+    }
+  }
   const str = exportCanvas();
   size.innerText = "size: " + str.length;
 }
@@ -200,7 +206,7 @@ if (device == "mouse") {
     ctx.putImageData(snapshot, 0, 0);
     drawStroke(stroke, preview);
   });
-  canvas.addEventListener("mouseup", () => {
+  function done() {
     if (!isDrawing) return;
     isDrawing = false;
     const stroke = strokes[strokes.length - 1];
@@ -212,7 +218,9 @@ if (device == "mouse") {
     redo.disabled = true;
     submit.disabled = false;
     recalcSize();
-  });
+  }
+  canvas.addEventListener("mouseup", done);
+  canvas.addEventListener("mouseleave", done);
 } else {
   canvas.addEventListener("touchstart", (e) => {
     isDrawing = true;
@@ -237,7 +245,7 @@ if (device == "mouse") {
     ctx.putImageData(snapshot, 0, 0);
     drawStroke(stroke, preview);
   });
-  canvas.addEventListener("touchend", () => {
+  function done() {
     if (!isDrawing) return;
     isDrawing = false;
     const stroke = strokes[strokes.length - 1];
@@ -248,7 +256,8 @@ if (device == "mouse") {
     undo.disabled = false;
     redo.disabled = true;
     submit.disabled = false;
-  });
+  }
+  canvas.addEventListener("touchend", done);
 }
 undo.addEventListener("click", () => {
   undoStack.push(strokes.pop());
