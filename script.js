@@ -71,21 +71,31 @@ function exportCanvas() {
     const r = parseInt(stroke.color.slice(1, 3), 16)
     const g = parseInt(stroke.color.slice(3, 5), 16)
     const b = parseInt(stroke.color.slice(5, 7), 16)
-    const len = splitNum(stroke.points.length); // I will kill you if you end up with a stroke with more than 32317006071311007300714876688669951960444102669715484032130345427524655138867890893197201411522913463688717960921898019494119559150490921095088152386448283120630877367300996091750197750389652106796057638384067568276792218642619756161838094338476170470581645852036305042887575891541065808607552399123930385521914333389668342420684974786564569494856176035326322058077805659331026192708460314150258592864177116725943603718461857357598351152301645904403697613233287231227125684710820209725157101726931323469678542580656697935045997268352998638215525166389437335543602135433229604645318478604952148193555853611059596230656 points
+    const len = splitNum(stroke.points.length); // I will kill you if you end up with a stroke with more than 32317006071311007300714876688669951960444102669715484032130345427524655138867890893197201411522913463688717960921898019494119559150490921095088152386448283120630877367300996091750197750389652106796057638384067568276792218642619756161838094338476170470581645852036305042887575891541065808607552399123930385521914333389668342420684974786564569494856176035326322058077805659331026192708460314150258592864177116725943603718461857357598351152301645904403697613233287231227125684710820209725157101726931323469678542580656697935045997268352998638215525166389437335543602135433229604645318478604952148193555853611059596230655 points
     canvasdata.push(r, g, b, stroke.size, len.length, ...len, ...stroke.points.flat());
   }
   const bytes = new Uint8Array(canvasdata);
+  const compressed = pako.deflate(bytes);
   let binary = "";
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
+  for (let i = 0; i < compressed.length; i++) {
+    binary += String.fromCharCode(compressed[i]);
   }
-  return btoa(binary);
+  const data = "2:" + btoa(binary);
+  return data;
 }
 function importCanvas(base64) {
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
+  version = (base64.match(/^(\d+):/) ?? [])[1]
+  console.log(base64.match(/^\d+:(.+)/));
+  let binary = atob(version ? base64.match(/^\d+:(.+)/)[1] : base64);
+  let bytes = new Uint8Array(binary.length);
   for (let i = 0; i < binary.length; i++) {
     bytes[i] = binary.charCodeAt(i);
+  }
+  switch (version) {
+    case "2": {
+      bytes = pako.inflate(bytes);
+      break;
+    }
   }
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -130,7 +140,8 @@ function recalcSize() {
     }
   }
   const str = exportCanvas();
-  size.innerText = "size: " + str.length;
+  const urlstr = encodeURIComponent(str);
+  size.innerHTML = "size: " + str.length + "<br><i>(" + urlstr.length + "in URL)</i>";
 }
 
 submit.addEventListener("click", () => {
