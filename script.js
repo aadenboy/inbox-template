@@ -140,7 +140,8 @@ function recalcSize() {
     }
   }
   const str = exportCanvas();
-  size.innerText = "size: " + str.length;
+  const urlstr = encodeURIComponent(str);
+  size.innerHTML = "size: " + str.length + "<br><i>(" + urlstr.length + "in URL)</i>";
 }
 
 submit.addEventListener("click", () => {
