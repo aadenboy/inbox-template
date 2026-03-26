@@ -11,8 +11,14 @@ const redo = document.getElementById("redo");
 const save = document.getElementById("save");
 const exportBtn = document.getElementById("export");
 const importBtn = document.getElementById("import");
+const help = document.getElementById("help");
 const canvasInput = document.querySelector("input[name='canvas']");
-const submit = document.getElementById("submit")
+const submit = document.getElementById("submit");
+const helpModal = document.getElementById("modal-help");
+const helpExit = document.getElementById("exit-help");
+const what = document.getElementById("what");
+const whatModal = document.getElementById("modal-what");
+const whatExit = document.getElementById("exit-what");
 let isDrawing = false;
 let strokes = []
 let undoStack = [];
@@ -20,6 +26,12 @@ ctx.lineCap = "round";
 ctx.lineJoin = "round";
 
 const url = "https://docs.google.com/forms/d/e/1FAIpQLSdFQB9QoXHLQDriiW-QA6RqS9eD_-rOUGQI4NkK2_LIAdQxRA/formResponse?usp=pp_url&entry.967521860={{identity}}&entry.1121636087={{message}}&entry.1572319870={{drawing}}"
+
+what.addEventListener("click", () => whatModal.showModal());
+whatExit.addEventListener("click", () => whatModal.close());
+
+help.addEventListener("click", () => helpModal.showModal());
+helpExit.addEventListener("click", () => helpModal.close());
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
@@ -267,6 +279,7 @@ if (device == "mouse") {
     undo.disabled = false;
     redo.disabled = true;
     submit.disabled = false;
+    recalcSize();
   }
   canvas.addEventListener("touchend", done);
 }
