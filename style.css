@@ -1,7 +1,7 @@
 html, body {
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   font-size: 16px;
-  background: url("/commonbg.png");
+  background: url("./commonbg.png");
   background-size: contain;
   display: flex;
   justify-content: center;
@@ -9,7 +9,9 @@ html, body {
 }
 body {
   background: #000a;
-  display: flex;
+  display: block;
+}
+main {
   flex-direction: column;
   justify-content: center;
   padding: 1em;
@@ -102,4 +104,25 @@ a {
   touch-action: none;
   user-select: none;
   pointer-events: auto;
+}
+dialog::backdrop {
+  background: #0006; 
+}
+dialog {
+  background: #000d;
+  box-shadow: 0 0 1em #fff;
+  color: #fff;
+  max-width: 50vw;
+  max-height: 75vh;
+  overflow-y: scroll;
+}
+dialog h2, dialog p {
+  color: #fff;
+}
+.modal-close {
+  float: right;
+}
+#what {
+  width: min-content;
+  float: right;
 }
