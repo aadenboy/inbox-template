@@ -6,38 +6,104 @@
     <script src="./pako.min.js"></script>
   </head>
   <body>
-    <h1>woah! an inbox! wowzers!</h1>
-    <p>built in a cave with a box of scraps because google forms works well enough</p>
-    <form id="form" method="POST">
-      <label>IDENTIFY YOURSELF: <input id="identity" type="text" name="identify yourself" placeholder="or be anonymous...!" /></label>
-      <textarea id="message" name="message" placeholder="whatever you want to say"></textarea>
-      <input type="text" name="canvas" style="display: none;" />
-      <div id="canvas-area">
-        <div class="canvas-buttons">
-          <label>brush size <input type="range" id="brush-size" min="1" max="50" value="10" /></label>
-          <label>color <input type="color" id="color" value="#000000" /></label>
-          <button type="button" id="clear">clear</button>
-          <button type="button" disabled="true" id="undo" aria-label="undo">&larr;</button>
-          <button type="button" disabled="true" id="redo" aria-label="redo">&rarr;</button>
+    <button id="what">?</button>
+    <main>
+      <h1>woah! an inbox! wowzers!</h1>
+      <p>built in a cave with a box of scraps because google forms works well enough</p>
+      <form id="form" method="POST">
+        <label>IDENTIFY YOURSELF: <input id="identity" type="text" name="identify yourself" placeholder="or be anonymous...!" /></label>
+        <textarea id="message" name="message" placeholder="whatever you want to say"></textarea>
+        <input type="text" name="canvas" style="display: none;" />
+        <div id="canvas-area">
+          <div class="canvas-buttons">
+            <label>brush size <input type="range" id="brush-size" min="1" max="50" value="10" /></label>
+            <label>color <input type="color" id="color" value="#000000" /></label>
+            <button type="button" id="clear">clear</button>
+            <button type="button" disabled="true" id="undo" aria-label="undo">&larr;</button>
+            <button type="button" disabled="true" id="redo" aria-label="redo">&rarr;</button>
+          </div>
+          <canvas id="canvas" width="250" height="200">
+            sorry! your browser doesn't support the canvas tag! no images for you!
+          </canvas>
+          <div class="canvas-buttons">
+            <span id="size"></span>
+            <button type="button" id="save">save png</button>
+            <button type="button" id="export">export raw</button>
+            <button type="button" id="import">import raw</button>
+            <button type="button" id="help">help</button>
+          </div>
+          <span style="font-size: 80%;">note: try to aim for less than 8k! if the image ends up too big (i.e error 400), save it as a png and send a link through instead</span>
         </div>
-        <canvas id="canvas" width="250" height="200">
-          sorry! your browser doesn't support the canvas tag! no images for you!
-        </canvas>
-        <div class="canvas-buttons">
-          <span id="size"></span>
-          <button type="button" id="save">save png</button>
-          <button type="button" id="export">export raw</button>
-          <button type="button" id="import">import raw</button>
-        </div>
-        <span style="font-size: 80%;">note: try to aim for less than 8k! if the image ends up too big (i.e error 400), save it as a png and send a link through instead</span>
-      </div>
-      <button disabled="true" type="submit" id="submit">submit</button>
-    </form>
+        <button disabled="true" type="submit" id="submit">submit</button>
+      </form>
+      <noscript>
+        <p>hey please <a href="https://www.enable-javascript.com/">enable javascript</a> to use this, thanks</p>
+      </noscript>
+      <p><a href="https://forms.gle/1kmLBT37wwEnwGsN9">want to fill the form directly?</a></p>
+      <p>you can also shoot me a tumblr ask or send me an email at aadenboy@email.com</p>
+    </main>
+    <dialog id="modal-what">
+      <button class="modal-close" id="exit-what">exit</button>
+      <h2>what is this???</h2>
+      <p>
+        welcome to my inbox! to summarize, this is just a wrapper
+        around a Google Forms document. you can send whatever you
+        want through to me via this, and it also includes a canvas
+        if you want to draw something!
+      </p>
+      <p>
+        all of the fields in this form are completely optional, and
+        you only need to fill one in order to submit the form
+        (you can't send just your identity though...)
+      </p>
+      <p>
+        note that everything that is sent is seen by me, and I may
+        choose to post it online if I respond to it. I will
+        obviously keep anything confidential hidden but general
+        advisory is to Not Do That
+      </p>
+      <p>
+        if you need a more urgent or serious inquiry, I implore you
+        to please contact me via a more direct or secure method,
+        such as via private messages, an email, or on my talk page
+        on any of the wikis I am on. this form is purely for silly
+        goodness! a last resort at best
+      </p>
+      <p>
+        also take note that I will ignore any and all "joke
+        responses", such as the jokers who sent in scribbles. you will
+        not get your fun
+      </p>
+      <p>
+        since this is a google forms wrapper, you have the option
+        of filling in the form directly in case this site proves
+        to be unreliable (found at the bottom of the website)
+      </p>
+      <p>
+        thanks for stopping by! :D
+      </p>
+    </dialog>
+    <dialog id="modal-help">
+      <button class="modal-close" id="exit-help">exit</button>
+      <h2>canvas import/export help</h2>
+      <p>
+        in order to allow for google forms to store your drawing,
+        your image is encoded as a Base64 string that I receive on
+        my end. this is what the "size" corresponds to, and why
+        extremely detailed images are unable to be sent in to me
+      </p>
+      <p>
+        for your needs, you likely won't ever use these buttons;
+        the "save png" button (which saves your drawing as a PNG
+        image) will be all that you need
+      </p>
+      <p>
+        but, if you're curious: pressing "export raw" will save the
+        string to your clipboard, which can then be imported back
+        by using the "import raw" button (assuming the string is
+        in your clipboard)
+      </p>
+    </dialog>
     <script src="./script.js"></script>
-    <noscript>
-      <p>hey please <a href="https://www.enable-javascript.com/">enable javascript</a> to use this, thanks</p>
-    </noscript>
-    <p><a href="https://forms.gle/1kmLBT37wwEnwGsN9">want to fill the form directly?</a></p>
-    <p>you can also shoot me a tumblr ask or send me an email at aadenboy@email.com</p>
   </body>
 </html>
