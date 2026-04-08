@@ -192,7 +192,9 @@ let epsilon = 0.5;
 function DouglasPeucker(points) {
   let dmax = 0;
   let index = 0;
-  const end = points.length - 1;
+  let end = points.length - 1;
+  let endsequal = points[0][0] == points[end][0] && points[0][1] == points[end][1];
+  end -= endsequal ? 1 : 0;
   for (let i = 1; i < end; i++) {
     const d = perpdist(points[0][0], points[0][1], points[end][0], points[end][1], points[i][0], points[i][1])
     if (d > dmax) {
@@ -205,6 +207,7 @@ function DouglasPeucker(points) {
     const recResults2 = DouglasPeucker(points.slice(index), epsilon);
     return recResults1.slice(0, recResults1.length - 1).concat(recResults2);
   }
+  end += endsequal ? 1 : 0;
   return [points[0], points[end]]
 }
 
