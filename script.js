@@ -346,7 +346,7 @@ function exportCanvas() {
           break;
         }
         case "line": case "rect": case "circle": {
-          canvasdata.push(0x01, mode, r, g, b, a, +stroke.size, stroke.x1, stroke.y1, stroke.x2, stroke.y2);
+          canvasdata.push({line: 0x01, rect: 0x02, circle: 0x03}[stroke.type], mode, r, g, b, a, +stroke.size, stroke.x1, stroke.y1, stroke.x2, stroke.y2);
           break;
         }
       }
@@ -441,7 +441,7 @@ function importCanvas(base64) {
         const x2 = bytes[i]; i++;
         const y2 = bytes[i]; i++;
         stroke = {
-          type: ["line", "rect", "circle"][type],
+          type: ["line", "rect", "circle"][type - 1],
           erase: !!erase,
           fill: !!fill,
           color: "#" + r.toString(16).padStart(2, "0") + g.toString(16).padStart(2, "0") + b.toString(16).padStart(2, "0") + a.toString(16).padStart(2, "0"),
