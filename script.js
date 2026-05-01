@@ -42,6 +42,32 @@ let tool = "pen";
 ctx.lineCap = "round";
 ctx.lineJoin = "round";
 
+const canvasTools = document.getElementById("canvas-tools");
+const canvasLayersContainer = document.getElementById("canvas-layers-container");
+const canvasLayerTools = document.getElementById("canvas-layer-tools");
+const minimize = document.getElementById("minimize");
+const maximize = document.getElementById("maximize");
+if (!document.cookie.match("view=")) {
+  document.cookie = "view=2";
+}
+let view = +document.cookie.match("view=([0-9]+)")[1];
+function redoview() {
+  canvasLayersContainer.style.display = view < 2 ? "none" : "flex";
+  canvasLayerTools.style.display = view < 2 ? "none" : "flex";
+  canvasTools.style.display = view < 1 ? "none" : "flex";
+}
+redoview();
+minimize.addEventListener("click", () => {
+  view = Math.max(0, --view);
+  document.cookie = "view=" + view;
+  redoview();
+});
+maximize.addEventListener("click", () => {
+  view = Math.min(2, ++view);
+  document.cookie = "view=" + view;
+  redoview();
+});
+
 // https://stackoverflow.com/a/17386803
 function isempty() {
   const pixelBuffer = new Uint32Array(
