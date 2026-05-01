@@ -4,12 +4,21 @@
     <title>send me stuff</title>
     <link rel="stylesheet" href="/style.css" />
     <script src="./pako.min.js"></script>
+    <link rel="stylesheet" href="./colorpicker.min.css" />
   </head>
   <body>
+    <nav>
+      <ul>
+        <li><a href="/inbox">inbox</a></li>
+        <li><span>responses TBA...!</span></li>
+        <li><a href="/youtubeposts">youtube archive</a></li>
+        <li><a href="/miscellaneous">miscellaneous</a></li>
+      </ul>
+    </nav>
     <button id="what">?</button>
     <main>
       <h1>woah! an inbox! wowzers!</h1>
-      <p>built in a cave with a box of scraps because google forms works well enough</p>
+      <p id="caption">built in a cave with a box of scraps because google forms works well enough</p>
       <form id="form" method="POST">
         <label>IDENTIFY YOURSELF: <input id="identity" type="text" name="identify yourself" placeholder="or be anonymous...!" /></label>
         <textarea id="message" name="message" placeholder="whatever you want to say"></textarea>
@@ -18,18 +27,70 @@
           <div class="canvas-buttons">
             <label>brush size <input type="range" id="brush-size" min="1" max="50" value="10" /></label>
             <label>color <input type="color" id="color" value="#000000" /></label>
-            <button type="button" id="clear">clear</button>
-            <button type="button" disabled="true" id="undo" aria-label="undo">&larr;</button>
-            <button type="button" disabled="true" id="redo" aria-label="redo">&rarr;</button>
+            <button type="button" disabled="true" id="undo" aria-label="undo"><i class="bi bi-arrow-counterclockwise"></i></button>
+            <button type="button" disabled="true" id="redo" aria-label="redo"><i class="bi bi-arrow-clockwise"></i></button>
           </div>
-          <canvas id="canvas" width="250" height="200">
-            sorry! your browser doesn't support the canvas tag! no images for you!
-          </canvas>
+          <div id="canvas-tool-area">
+            <ul id="canvas-tools">
+              <li><label><input type="radio" name="tool" id="pen" value="pen" checked /><i class="bi bi-pencil"></i></label></li>
+              <li><label><input type="radio" name="tool" id="line" value="line" /><i class="bi bi-slash-lg"></i></label></li>
+              <li><label><input type="radio" name="tool" id="rect" value="rect" /><i class="bi bi-square"></i></label></li>
+              <li><label><input type="radio" name="tool" id="circle" value="circle" /><i class="bi bi-circle"></i></label></li>
+              <li><label><input type="checkbox" id="fill" value="fill" /><i class="bi bi-paint-bucket"></i></label></li>
+              <li><label><input type="checkbox" id="erase" value="erase" /><i class="bi bi-eraser"></i></label></li>
+            </ul>
+            <canvas id="canvas" width="250" height="200">
+              sorry! your browser doesn't support the canvas tag! no images for you!
+            </canvas>
+            <div id="canvas-layers-container">
+              <button type="button" id="add-layer">add layer</button>
+              <ul id="canvas-layers"></ul>
+            </div>
+            <div id="canvas-layer-tools">
+              <button type="button" id="layer-up" aria-label="move up"><i class="bi bi-arrow-bar-up"></i></button>
+              <button type="button" id="layer-down" aria-label="move down"><i class="bi bi-arrow-bar-down"></i></button>
+              <button type="button" id="layer-remove">remove</button>
+              <input type="number" id="layer-opacity" min="0" max="100" value="100" aria-label="opacity" />
+              <select id="layer-blend">
+                <option value="0">default</option>
+                <option value="1">source-in</option>
+                <option value="2">source-out</option>
+                <option value="3">source-atop</option>
+                <option value="4">destination-over</option>
+                <option value="5">destination-in</option>
+                <option value="6">destination-out</option>
+                <option value="7">destination-atop</option>
+                <option value="8">lighter</option>
+                <option value="9">copy</option>
+                <option value="10">xor</option>
+                <option value="11">multiply</option>
+                <option value="12">screen</option>
+                <option value="13">overlay</option>
+                <option value="14">darken</option>
+                <option value="15">lighten</option>
+                <option value="16">color-dodge</option>
+                <option value="17">color-burn</option>
+                <option value="18">hard-light</option>
+                <option value="19">soft-light</option>
+                <option value="20">difference</option>
+                <option value="21">exclusion</option>
+                <option value="22">hue</option>
+                <option value="23">saturation</option>
+                <option value="24">color</option>
+                <option value="25">luminosity</option>
+              </select>
+            </div>
+          </div>
           <div class="canvas-buttons">
             <span id="size"></span>
             <button type="button" id="save">save png</button>
             <button type="button" id="export">export raw</button>
             <button type="button" id="import">import raw</button>
+            <button type="button" id="clear">clear</button>
+          </div>
+          <div class="canvas-buttons">
+            <button tyoe="button" id="minimize">view more</button>
+            <button type="button" id="maximize">view less</button>
             <button type="button" id="help">help</button>
           </div>
           <span style="font-size: 80%;">note: try to aim for less than 8k! if the image ends up too big (i.e error 400), save it as a png and send a link through instead</span>
@@ -40,6 +101,7 @@
         <p>hey please <a href="https://www.enable-javascript.com/">enable javascript</a> to use this, thanks</p>
       </noscript>
       <p><a href="https://forms.gle/1kmLBT37wwEnwGsN9">want to fill the form directly?</a></p>
+      <p><a href="https://github.com/aadenboy/aadenboy.github.io">or check out the github!</a></p>
       <p>you can also shoot me a tumblr ask or send me an email at aadenboy@email.com</p>
     </main>
     <dialog id="modal-what">
@@ -85,6 +147,39 @@
     </dialog>
     <dialog id="modal-help">
       <button class="modal-close" id="exit-help">exit</button>
+      <h2>general canvas help</h2>
+      <p>
+        the canvas is a 250x200 pixel canvas for more free expressionism!
+        the canvas supports both mouse (by extension drawing pad) and touch
+        input. the canvas is saved to the form when you submit it, and
+        you can also save it as a PNG image if you want to keep it for
+        yourself
+      </p>
+      <p>
+        the slider at the top controls the size of your brush strokes,
+        and the input next to that controls the color of your brush strokes.
+        the rightmost arrow buttons allow <i class="bi bi-arrow-counterclockwise"> undoing</i> and <i class="bi bi-arrow-clockwise"> redoing</i> your strokes,
+        which can also be done with <kbd>Ctrl/Cmd</kbd>+<kbd>Z</kbd> and
+        <kbd>Ctrl/Cmd</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd> respectively
+      </p>
+      <p>
+        the tools to the left of the canvas determine what happens when
+        you draw on the canvas. by default, this is set to the <i class="bi bi-pencil"> Pen</i>
+        tool (<kbd>P</kbd>). use the <i class="bi bi-slash-lg"> Line</i> (<kbd>L</kbd>), <i class="bi bi-square"> Rectangle</i> (<kbd>R</kbd>),
+        and <i class="bi bi-circle"> Oval</i> (<kbd>O</kbd>) tools to inscribe their respective shapes, and hold <kbd>Shift</kbd>
+        while drawing them to make a perfect shape. the <i class="bi bi-eraser"> Erase</i> (<kbd>E</kbd>) and
+        <i class="bi bi-paint-bucket"> Fill</i> (<kbd>F</kbd>) toggles are applied onto your stroke and combinable,
+        erasing and/or filling your strokes respectively
+      </p>
+      <p>
+        the list at the right controls the layers in your drawing, of which
+        you may have up to 256 of. layers are drawing in descending order, with
+        the first layer being the topmost layer. click "Add layer" to create a new
+        layer, which automatically selects it. clicking "remove" removes the
+        layer and all of its strokes. pressing the <i class="bi bi-arrow-bar-up"> Move Up</i> or <i class="bi bi-arrow-bar-down"> Move Down</i> buttons changes
+        the ordering of the layer. the overall opacity of the layer can be modified with the input box,
+        and the blending mode of the layer with those under it is selectable in the dropdown menu
+      </p>
       <h2>canvas import/export help</h2>
       <p>
         in order to allow for google forms to store your drawing,
@@ -103,7 +198,79 @@
         by using the "import raw" button (assuming the string is
         in your clipboard)
       </p>
+      <h2>for developers:</h2>
+      <p>
+        drawings are stored in a custom byte-encoded format. newer
+        strings follow the format <code>[version][attributes]:[data]</code>,
+        where <code>version</code> is a number, <code>attributes</code> is
+        a string of lowercase letters (denoting the properties of the
+        data), and <code>data</code> is the base64 string. if the
+        string does not match this format, it is assumed to be version 1
+        with no attributes. the base64 string can optinally be URL safe,
+        but it is not required
+      </p>
+      <ul>
+        <li>
+          version 1 (default): simply the raw byte data, and is the standard for
+          future versions regarding stroke data. strokes follow this format: <br>
+          <code>[r][g][b][size][length size][...length][...points]</code> <br>
+          <code>r</code>, <code>g</code>, and <code>b</code> are the red, green,
+          and blue values of the stroke's color, stored as bytes. <code>size</code>
+          is the width of the stroke, stored as a byte. <code>length size</code>
+          determines how many bytes the length of the stroke takes up, and that
+          many bytes afterwards (<code>...length</code>) determine the amount of
+          points in the stroke in little endian. the rest of the bytes (<code>...points</code>)
+          are the X and Y positions of each point in the stroke, stored as pairs
+          of bytes
+        </li>
+        <li>
+          version 2: the raw byte data is compressed using zlib, with the format
+          being the same as version 1
+        </li>
+        <li>
+          version 3: in addition to versions 1 and 2...
+          <ul>
+            <li>
+              the RGB values for all tools are followed by an additional byte
+              for the alpha channel, and each tool is distinguished by a prefixed
+              number. each prefix is also immediately followed by a digit determining
+              if it is erasing (+<code>0x01</code>) and/or filling (+<code>0x02</code>)
+            </li>
+            <li>
+              strokes are preceded by <code>0x00</code> to signify that it is
+              a stroke. the points in the stroke are also stored as a delta from
+              the previous point (two's complement), with the exception of the first
+              point. to disable this, append <code>a</code> to the attribute string.
+            </li>
+            <li>
+              the line, rectangle, and oval tools are now supported, being prefixed
+              with <code>0x01</code>, <code>0x02</code>, and <code>0x03</code>
+              respectively. the format for these tools is <br>
+              <code>[tool][r][g][b][a][x1][y1][x2][y2]</code> <br>
+              where <code>tool</code> is the tool's prefix, <code>r</code>, <code>g</code>,
+              <code>b</code>, and <code>a</code> are the red, green, blue, and alpha values
+              of the tool's color, and <code>x1</code>, <code>y1</code>, <code>x2</code>, and
+              <code>y2</code> are the coordinates of the tool's start and end points
+            </li>
+            <li>
+              layers reserve the code <code>0xff</code>, with such data: <br>
+              <code>[opacity][blending mode][visibility]</code> <br>
+              where <code>opacity</code> is the oppacity of the layer, <code>blending mode</code> is the
+              blending mode of the layer as an index to the ordering of the dropdown menu, and <code>visibility</code>
+              is either 0x00 or 0x01 determining the visibility of the layer.
+              all the strokes which follow are drawn on this layer until another layer is defined
+            </li>
+          </ul>
+        </li>
+      </ul>
     </dialog>
+    <dialog id="filesave">
+      <button class="modal-close" id="exit-filesave">exit</button>
+      <h2>save your drawing</h2>
+      <input type="text" id="filename" placeholder="filename" />
+      <button id="save-file">save</button>
+    </dialog>
+    <script src="./colorpicker.iife.min.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>
