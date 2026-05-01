@@ -17,6 +17,7 @@ const fill = document.getElementById("fill");
 const erase = document.getElementById("erase");
 const layersList = document.getElementById("canvas-layers");
 const addLayer = document.getElementById("add-layer");
+const layerName = document.getElementById("layer-name");
 const layerUp = document.getElementById("layer-up");
 const layerDown = document.getElementById("layer-down");
 const layerRemove = document.getElementById("layer-remove");
@@ -33,6 +34,7 @@ const helpExit = document.getElementById("exit-help");
 const what = document.getElementById("what");
 const whatModal = document.getElementById("modal-what");
 const whatExit = document.getElementById("exit-what");
+const size = document.getElementById("size");
 let isDrawing = false;
 let layers = [{opacity: 100, blending: 0, strokes: [], visible: true}];
 let layerPointer = 0;
@@ -50,7 +52,7 @@ const maximize = document.getElementById("maximize");
 if (!document.cookie.match("view=")) {
   document.cookie = "view=2";
 }
-let view = +document.cookie.match("view=([0-9]+)")[1];
+let view = +(document.cookie.match("view=([0-9]+)") ?? [null, 2])[1];
 function redoview() {
   canvasLayersContainer.style.display = view < 2 ? "none" : "flex";
   canvasLayerTools.style.display = view < 2 ? "none" : "flex";
@@ -84,6 +86,7 @@ function state() {
   undo.disabled = false;
   redo.disabled = true;
   debugggggg();
+  recalcSize(data);
 }
 state();
 
@@ -213,14 +216,22 @@ function updateLayers() {
     input.name = "layer";
     input.value = i;
     input.checked = i == layerPointer;
-    input.addEventListener("change", () => {
+    function setter() {
       layerPointer = i;
+      layerName.value = layer.name ?? "";
+      layerName.placeholder = "layer " + (i + 1);
       layerOpacity.value = layer.opacity;
       layerBlend.value = layer.blending;
-    });
+    }
+    input.addEventListener("change", setter);
+    if (i == layerPointer) setter();
     li.appendChild(toggle);
     label.appendChild(input);
-    label.appendChild(document.createTextNode(`layer ${i + 1}`));
+    if (!layer.name) {
+      const il = document.createElement("i");
+      il.innerHTML = "layer " + (i + 1);
+      label.appendChild(il);
+    } else label.appendChild(document.createTextNode(layer.name));
     li.appendChild(label);
     layersList.appendChild(li);
   }
@@ -232,6 +243,13 @@ addLayer.addEventListener("click", () => {
   updateLayers();
   state();
 });
+layerName.addEventListener("input", () => {
+  layerName.value = layerName.value.slice(0, 255);
+  layers[layerPointer].name = layerName.value;
+  if (!layerName.value) delete layers[layerPointer].name;
+  updateLayers();
+});
+layerName.addEventListener("change", state);
 layerDown.addEventListener("click", () => {
   if (layerPointer == layers.length - 1) return;
   const layer = layers[layerPointer];
@@ -321,8 +339,16 @@ function splitNum(n) {
 }
 function exportCanvas() {
   let canvasdata = [];
+  let usesLayerNames = layers.some(layer => layer.name);
   for (let layer of layers) {
     canvasdata.push(0xff, layer.opacity, layer.blending, layer.visible ? 0x01 : 0x00);
+    if (usesLayerNames) {
+      const name = layer.name ?? "";
+      canvasdata.push(name.length);
+      for (let i = 0; i < name.length; i++) {
+        canvasdata.push(name.charCodeAt(i));
+      }
+    }
     for (let stroke of layer.strokes) {
       const mode = stroke.erase * 0b1 + stroke.fill * 0b10;
       const r = parseInt(stroke.color.slice(1, 3), 16);
@@ -358,7 +384,7 @@ function exportCanvas() {
   for (let i = 0; i < compressed.length; i++) {
     binary += String.fromCharCode(compressed[i]);
   }
-  let data = "3:" + btoa(binary);
+  let data = (usesLayerNames ? "3l:" : "3:") + btoa(binary);
   data = data.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, ""); // you can ignore this step
   return data;
 }
@@ -371,6 +397,7 @@ function importCanvas(base64) {
     bytes[i] = binary.charCodeAt(i);
   }
   const absolute = version < 3 || params.match("a");
+  const usesLayerNames = version >= 3 && params.match("l");
   if (version > 1) bytes = pako.inflate(bytes);
   if (version < 3) layers = [{opacity: 100, blending: 0, strokes: [], visible: true}];
   else layers = [];
@@ -386,7 +413,15 @@ function importCanvas(base64) {
         const opacity = bytes[i]; i++;
         const blending = bytes[i]; i++;
         const visible = bytes[i]; i++;
-        layers.push({opacity, blending, visible, strokes: []});
+        let name = "";
+        if (usesLayerNames) {
+          const length = bytes[i]; i++;
+          for (let j = 0; j < length; j++) {
+            name += String.fromCharCode(bytes[i]);
+            i++;
+          }
+        }
+        layers.push({opacity, blending, visible, strokes: [], name});
         currentLayer = layers[layers.length - 1];
         continue;
       }
@@ -459,7 +494,6 @@ function importCanvas(base64) {
   drawAll();
 }
 
-const size = document.getElementById("size")
 function recalcSize(str) {
   str ??= exportCanvas();
   //const urlstr = encodeURIComponent(str).replace(/%3A/g, ':');
@@ -692,6 +726,7 @@ const captions = [
   "fully automatable!",
   "this is not at all optimized!",
   "so much complexity and I still limit you to a 250x200 canvas just so I can stuff all the values into 8 bits",
-  "IT'S LITERALLY MSPAINT IN THE WEB."
+  "IT'S LITERALLY MSPAINT IN THE WEB.",
+  "thanks xaigamer1"
 ]
 caption.innerHTML = captions[(Math.random()*captions.length)|0]; // haha
