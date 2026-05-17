@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>send me stuff</title>
+    <link rel="stylesheet" href="/tecknar/src/colorpicker.min.css" />
+    <script src="/tecknar/src/colorpicker.iife.min.js"></script>
+    <script src="/tecknar/src/pako.min.js"></script>
+    <script src="/tecknar/src/tecknar.js"></script>
+    <link rel="stylesheet" href="/src/tecknar/tecknar.css" />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li><a href="/inbox">inbox</a></li>
+        <li><span>responses TBA...!</span></li>
+        <li><a href="/youtubeposts">youtube archive</a></li>
+        <li><a href="/miscellaneous">miscellaneous</a></li>
+      </ul>
+    </nav>
+    <button id="what">?</button>
+    <main>
+      <h1>woah! an inbox! wowzers!</h1>
+      <p id="caption">built in a cave with a box of scraps because google forms works well enough</p>
+      <form id="form" method="POST" target="_blank" action="https://docs.google.com/forms/d/e/1FAIpQLSdFQB9QoXHLQDriiW-QA6RqS9eD_-rOUGQI4NkK2_LIAdQxRA/formResponse?usp=pp_url">
+        <label>IDENTIFY YOURSELF: <input id="identity" type="text" name="entry.967521860" placeholder="or be anonymous...!" /></label>
+        <textarea id="message" name="entry.1121636087" placeholder="whatever you want to say"></textarea>
+        <input type="text" id="canvas-data" name="entry.1572319870" style="display: none;" />
+        <div id="canvas-area">
+          <div id="canvas-container"></div>
+        </div>
+        <button type="submit" id="submit">submit</button>
+      </form>
+      <noscript>
+        <p>hey please <a href="https://www.enable-javascript.com/">enable javascript</a> to use this, thanks</p>
+      </noscript>
+      <p><a href="https://forms.gle/1kmLBT37wwEnwGsN9">want to fill the form directly?</a></p>
+      <p><a href="https://github.com/aadenboy/aadenboy.github.io">or check out the github!</a></p>
+      <p>you can also shoot me a tumblr ask or send me an email at aadenboy@email.com</p>
+    </main>
+    <dialog id="modal-what">
+      <button class="modal-close" id="exit-what">exit</button>
+      <h2>what is this???</h2>
+      <p>
+        welcome to my inbox! to summarize, this is just a wrapper
+        around a Google Forms document. you can send whatever you
+        want through to me via this, and it also includes a canvas
+        if you want to draw something!
+      </p>
+      <p>
+        all of the fields in this form are completely optional, and
+        you only need to fill one in order to submit the form
+        (you can't send just your identity though...)
+      </p>
+      <p>
+        note that everything that is sent is seen by me, and I may
+        choose to post it online if I respond to it. I will
+        obviously keep anything confidential hidden but general
+        advisory is to Not Do That
+      </p>
+      <p>
+        if you need a more urgent or serious inquiry, I implore you
+        to please contact me via a more direct or secure method,
+        such as via private messages, an email, or on my talk page
+        on any of the wikis I am on. this form is purely for silly
+        goodness! a last resort at best
+      </p>
+      <p>
+        also take note that I will ignore any and all "joke
+        responses", such as the jokers who sent in scribbles. you will
+        not get your fun
+      </p>
+      <p>
+        since this is a google forms wrapper, you have the option
+        of filling in the form directly in case this site proves
+        to be unreliable (found at the bottom of the website)
+      </p>
+      <p>
+        thanks for stopping by! :D
+      </p>
+    </dialog>
+    <script>
+      const tecknar = new Tecknar();
+      tecknar.mount("#canvas-container");
+
+      const inputs = document.querySelectorAll(".tecknar-container input, .tecknar-container button");
+      inputs.forEach((input) => {
+        if (input.tagName == "BUTTON") input.setAttribute("type", "button");
+        else input.addEventListener("keydown", (e) => {
+          if (e.key == "Enter") e.preventDefault();
+        });
+      });
+
+      const form = document.getElementById("form");
+      const submit = document.getElementById("submit");
+      const identity = document.getElementById("identity");
+      const message = document.getElementById("message");
+      const canvas = document.getElementById("canvas-data");
+
+      const what = document.getElementById("what");
+      const modalWhat = document.getElementById("modal-what");
+      const exitWhat = document.getElementById("exit-what");
+      what.addEventListener("click", () => modalWhat.showModal());
+      exitWhat.addEventListener("click", () => modalWhat.close());
+
+      form.addEventListener("submit", (e) => {
+        const hasStrokes = tecknar.layers.some((layer) => layer.type === null && layer.strokes.length > 0);
+        if (!identity.value && !message.value && !hasStrokes) {
+          alert("you need to fill in at least one field!");
+          e.preventDefault();
+          return;
+        }
+        const data = tecknar.export();
+        canvas.value = data;
+      });
+    </script>
+  </body>
+</html>
