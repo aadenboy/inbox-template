@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Inbox template with drawing pad</title>
+    <link rel="stylesheet" href="/tecknar/src/colorpicker.min.css" />
+    <script src="/tecknar/src/colorpicker.iife.min.js"></script>
+    <script src="/tecknar/src/pako.min.js"></script>
+    <script src="/tecknar/src/tecknar.js"></script>
+    <link rel="stylesheet" href="/tecknar/src/tecknar.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Inbox template</h1>
+      <p>
+        This is a template you can use to create a simple Google Forms powered inbox. This version includes Tecknar
+        assuming you want others to send drawings to you. Visit <a href="inboxbare.html">inboxbare.html</a> if you do not want this.
+      </p>
+      <form id="form" method="POST" target="_blank" action="https://docs.google.com/forms/d/e/[GOOGLE FORM URL]/formResponse?usp=pp_url">
+        <label>Author: <input id="identity" type="text" name="entry.[ENTRY ID]" placeholder="Anonymous" /></label>
+        <textarea id="message" name="entry.[ENTRY ID]" placeholder="Message"></textarea>
+        <input type="text" id="canvas-data" name="entry.[ENTRY ID]" style="display: none;" />
+        <div id="canvas-area">
+          <div id="canvas-container"></div>
+        </div>
+        <button type="submit" id="submit">submit</button>
+      </form>
+      <noscript>
+        <p>This inbox requires that you <a href="https://www.enable-javascript.com/">enable javascript</a> to function properly.</p>
+      </noscript>
+    </main>
+    <script>
+      const tecknar = new Tecknar();
+      tecknar.mount("#canvas-container");
+
+      const inputs = document.querySelectorAll(".tecknar-container input, .tecknar-container button");
+      inputs.forEach((input) => {
+        if (input.tagName == "BUTTON") input.setAttribute("type", "button");
+        else input.addEventListener("keydown", (e) => {
+          if (e.key == "Enter") e.preventDefault();
+        });
+      });
+
+      const form = document.getElementById("form");
+      const submit = document.getElementById("submit");
+      const identity = document.getElementById("identity");
+      const message = document.getElementById("message");
+      const canvas = document.getElementById("canvas-data");
+
+      const emptyData = tecknar.export().data;
+      form.addEventListener("submit", (e) => {
+        const data = tecknar.export().data;
+        if (!message.value && data == emptyData) {
+          alert("You need to fill in at least one field.");
+          e.preventDefault();
+          return;
+        }
+        canvas.value = data == emptyData ? "" : data;
+      });
+    </script>
+  </body>
+</html>
