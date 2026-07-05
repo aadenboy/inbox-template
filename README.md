@@ -1,7 +1,7 @@
-This is a template which allows you to create a Google Forms powered inbox. This is best if you are running a static site or cannot host an inbox on your end. `inboxbare.html` only uses `<input>` elements, while `inboxdraw.html` comes prepackaged with [https://github.com/aadenboy/tecknar](Tecknar) to allow respondants to send drawings.
+This is a template which allows you to create a Google Forms powered inbox. This is best if you are running a static site or cannot host an inbox on your end. `inboxbare.html` only uses `<input>` elements, while `inboxdraw.html` comes prepackaged with [Tecknar](https://github.com/aadenboy/tecknar) to allow respondants to send drawings.
 
 ## Setup
-1. [https://docs.google.com/forms/u/0/create](Create a new form). Set a title if you wish.
+1. [Create a new form](https://docs.google.com/forms/u/0/create). Set a title if you wish.
 2. Take the URL for your form and replace `[GOOGLE FORM URL]` in the `<form>` tag with the ID of the form.
 3. Create "Short answer" or "Paragraph" questions for each of the `<input>` elements in the form. All questions must be optional.
     * If you are using `inboxdraw.html`, the drawing pad will send data through as text, so use the same question type.
