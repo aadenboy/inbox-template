@@ -1,7 +1,23 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Inbox template with drawing pad</title>
+    <title>Inbox template</title>
+    <style>
+      body {
+        margin: 1em;
+        font-size: 16px;
+      }
+
+      form {
+        border: 1px solid gray;
+        padding: 1em;
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        max-width: fit-content;
+        margin: 1em auto;
+      }
+    </style>
   </head>
   <body>
     <main>
@@ -13,10 +29,7 @@
       <form id="form" method="POST" target="_blank" action="https://docs.google.com/forms/d/e/[GOOGLE FORM URL]/formResponse?usp=pp_url">
         <label>Author: <input id="identity" type="text" name="entry.[ENTRY ID]" placeholder="Anonymous" /></label>
         <textarea id="message" name="entry.[ENTRY ID]" placeholder="Message"></textarea>
-        <input type="text" id="canvas-data" name="entry.[ENTRY ID]" style="display: none;" />
-        <div id="canvas-area">
-          <div id="canvas-container"></div>
-        </div>
+        <!-- Add more elements as needed. -->
         <button type="submit" id="submit">submit</button>
       </form>
       <i>Inbox forked from <a href="https://github.com/aadenboy/inbox-template">https://github.com/aadenboy/inbox-template</a></i>
@@ -25,32 +38,14 @@
       </noscript>
     </main>
     <script>
-      const tecknar = new Tecknar();
-      tecknar.mount("#canvas-container");
-
-      const inputs = document.querySelectorAll(".tecknar-container input, .tecknar-container button");
-      inputs.forEach((input) => {
-        if (input.tagName == "BUTTON") input.setAttribute("type", "button");
-        else input.addEventListener("keydown", (e) => {
-          if (e.key == "Enter") e.preventDefault();
-        });
-      });
-
-      const form = document.getElementById("form");
-      const submit = document.getElementById("submit");
-      const identity = document.getElementById("identity");
-      const message = document.getElementById("message");
-      const canvas = document.getElementById("canvas-data");
-
-      const emptyData = tecknar.export().data;
+      const inputs = Array.from(document.querySelectorAll('#form [name^="entry."]'));
       form.addEventListener("submit", (e) => {
-        const data = tecknar.export().data;
-        if (!message.value && data == emptyData) {
+        const anyFilled = inputs.some(input => input.value !== "");
+        if (!anyFilled) {
           alert("You need to fill in at least one field.");
           e.preventDefault();
           return;
         }
-        canvas.value = data == emptyData ? "" : data;
       });
     </script>
   </body>
