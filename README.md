@@ -24,4 +24,4 @@ This is a template which allows you to create a Google Forms powered inbox. This
 9. Go into each `<input>` tag and replace the name with the name of the parameter it corresponds to.
 10. Fill out the form through your website to verify that it is working properly. You should be done.
 
-If you wish to be notified whenever an email comes through, go to your form, navigate to the "Responses" tab, then enable "Get email notifications for new responses" in the "More options for responses" dropdown.
+If you wish to be notified whenever an email comes through, go to your form, navigate to the "Responses" tab, then enable "Get email notifications for new responses" in the "More options for responses" dropdown. Note that these emails may be sent to spam when sent for the first time.
